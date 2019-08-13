@@ -32,20 +32,17 @@
 
 	</head>
 	<body>
-		<h1>歡迎使用Cotpear帳號系統</h1>
+		<h1>Cotpear帳號註冊系統</h1>
 		<div id="memberSystem_status" class="alert alert-info" style="display:none;"></div>
-		<div id="buttons_LoginedPart" class="card" style="width: 18rem;display:none;" >
+		<div class="card" style="width: 18rem;">
 			<div class="card-body">
-				<div id="memberSystem_cash" class="btn btn-success">我的Cotpear幣</div>
-				<div id="memberSystem_info" class="btn btn-success">個人資料</div>
-				<div id="memberSystem_logout" class="btn btn-success">登出</div>
+				<input id="input_EmailInput" type="text" class="form-control">
+				<input id="input_PasswordInput" type="password" class="form-control">
+				<button id="btn_register" class="form-control">註冊</button>
 			</div>
 		</div>
-		<div id="buttons_nonLoginedPart" class="card" style="width: 18rem;display:none;">
-			<div class="card-body">
-				<div id="memberSystem_login" class="btn btn-success">登入</div>
-				<div id="memberSystem_register" class="btn btn-success">註冊</div>
-			</div>
+		<div id="memberSystem_captcha" style="">
+			
 		</div>
 		<script>
 			window.LoginedUser = null;
@@ -53,24 +50,32 @@
 			firebase.auth().onAuthStateChanged(function(user) {
 				if (user) {
 					// 已登入的用戶
-					window.LoginedUser = user;
-					$("#memberSystem_status").text("您屬於登入狀態")
-					$("#memberSystem_status").show()
-					$("#buttons_LoginedPart").show()
+					alert("您在登入狀態,5秒後導向來源網頁")
+					setTimeout(function() {
+						if (document.referrer)
+							location.href = document.referrer
+						else
+							location.href = "/"
+					})
 				} else {
 					// 未登入
-					$("#memberSystem_status").text("您不在登入狀態")
-					$("#memberSystem_status").show()
-					$("#buttons_nonLoginedPart").show()
+					//$("#memberSystem_status").text("您不在登入狀態")
+					//$("#memberSystem_status").show()
+
 				}
 			});
-			
-			$("#memberSystem_login").click(function(){
-				location.href="/login"
-			})
-			
-			$("#memberSystem_register").click(function(){
-				location.href="/register"
+
+			$("#btn_register").click(function() {
+				
+				firebase.auth().createUserWithEmailAndPassword(email, password)
+					.then((result) => {
+						// Redirect to profile page after sign-in. The service worker will detect
+						// this and append the ID token to the header.
+						window.location.assign('/profile');
+					})
+					.catch((error) => {
+						// Error occurred.
+					});
 			})
 		</script>
 	</body>
